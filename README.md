@@ -4,4 +4,4 @@
 
 ## Inside this repository there is a practice analysis where I test out different features of the library packages I used and an analysis where I report my findings
 
-### I will be covering univariate data analysis, multivariate data analysis and some machine learning techniques I have been practicing. 
+
