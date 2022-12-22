@@ -16,3 +16,5 @@ request, https://realpython.com/python-requests/
 pandas, https://pandas.pydata.org/
 
 Additionally, for the criterias used to analyze the data, I utilized https://www.esports.net/news/lol/riot-games-buff-nerf-criteria/
+
+Please go to https://medium.com/@micowly/league-of-legends-patch-12-18-data-analysis-4b7cc39a1c66 for my findings!
