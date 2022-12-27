@@ -1,0 +1,109 @@
+Queries utilized to make the dashboard.
+
+Data Aggregation
+
+CREATE TABLE injuries_2017_2021 AS
+SELECT * FROM snowboarding_injuries.neiss_2017
+UNION
+SELECT * FROM snowboarding_injuries.neiss_2018
+UNION
+SELECT * FROM snowboarding_injuries.neiss_2019
+UNION
+SELECT * FROM snowboarding_injuries.neiss_2020
+UNION
+SELECT * FROM snowboarding_injuries.neiss_2021;
+
+Data Cleaning Code
+
+ALTER TABLE injuries_2017_2021 MODIFY Diagnosis VARCHAR(255);
+ALTER TABLE injuries_2017_2021 MODIFY Body_Part VARCHAR(255);
+ALTER TABLE injuries_2017_2021 MODIFY Sex VARCHAR(255);
+ALTER TABLE injuries_2017_2021 MODIFY Race VARCHAR(255);
+
+UPDATE injuries_2017_2021
+SET Diagnosis = (
+  CASE
+    WHEN Diagnosis = 41 THEN 'INGESTION'
+    WHEN Diagnosis = 42 THEN 'ASPIRATION'
+    WHEN Diagnosis = 46 THEN 'BURN, ELECTRICAL'
+    WHEN Diagnosis = 47 THEN 'BURN, NOT SPEC.'
+    WHEN Diagnosis = 48 THEN 'BURN, SCALD'
+    WHEN Diagnosis = 49 THEN 'BURN, CHEMICAL'
+    WHEN Diagnosis = 50 THEN 'AMPUTATION'
+    WHEN Diagnosis = 51 THEN 'BURNS, THERMAL'
+    WHEN Diagnosis = 52 THEN 'CONCUSSION'
+    WHEN Diagnosis = 53 THEN 'CONTUSIONS, ABR'
+    WHEN Diagnosis = 54 THEN 'CRUSHING'
+    WHEN Diagnosis = 55 THEN 'DISLOCATION'
+    WHEN Diagnosis = 56 THEN 'FOREIGN BODY'
+    WHEN Diagnosis = 57 THEN 'FRACTURE'
+    WHEN Diagnosis = 58 THEN 'HEMATOMA'
+    WHEN Diagnosis = 59 THEN 'LACERATION'
+    WHEN Diagnosis = 60 THEN 'DENTAL INJURY'
+    WHEN Diagnosis = 61 THEN 'NERVE DAMAGE'
+    WHEN Diagnosis = 62 THEN 'INTERNAL INJURY'
+    WHEN Diagnosis = 63 THEN 'PUNCTURE'
+    WHEN Diagnosis = 64 THEN 'STRAIN, SPRAIN'
+    WHEN Diagnosis = 65 THEN 'ANOXIA'
+    WHEN Diagnosis = 66 THEN 'HEMORRHAGE'
+    WHEN Diagnosis = 67 THEN 'ELECTRIC SHOCK'
+    WHEN Diagnosis = 68 THEN 'POISONING'
+    WHEN Diagnosis = 69 THEN 'SUBMERSION'
+    WHEN Diagnosis = 70 THEN 'OTHER'
+    WHEN Diagnosis = 71 THEN 'OTHER'
+    WHEN Diagnosis = 72 THEN 'AVULSION'
+    WHEN Diagnosis = 73 THEN 'RADIATION'
+    WHEN Diagnosis = 74 THEN 'DERMA/CONJUNCT'
+  END
+);
+
+UPDATE injuries_2017_2021
+SET Body_Part =
+CASE
+  WHEN Body_Part = 0 THEN 'INTERNAL'
+  WHEN Body_Part = 30 THEN 'SHOULDER'
+  WHEN Body_Part = 31 THEN 'UPPER TRUNK'
+  WHEN Body_Part = 32 THEN 'ELBOW'
+  WHEN Body_Part = 33 THEN 'LOWER ARM'
+  WHEN Body_Part = 34 THEN 'WRIST'
+  WHEN Body_Part = 35 THEN 'KNEE'
+  WHEN Body_Part = 36 THEN 'LOWER LEG'
+  WHEN Body_Part = 37 THEN 'ANKLE'
+  WHEN Body_Part = 38 THEN 'PUBIC REGION'
+  WHEN Body_Part = 75 THEN 'HEAD'
+  WHEN Body_Part = 76 THEN 'FACE'
+  WHEN Body_Part = 77 THEN 'EYEBALL'
+  WHEN Body_Part = 78 THEN 'UPPER TRUNK(OLD)'
+  WHEN Body_Part = 79 THEN 'LOWER TRUNK'
+  WHEN Body_Part = 80 THEN 'UPPER ARM'
+  WHEN Body_Part = 81 THEN 'UPPER LEG'
+  WHEN Body_Part = 82 THEN 'HAND'
+  WHEN Body_Part = 83 THEN 'FOOT'
+  WHEN Body_Part = 84 THEN '25-50% OF BODY'
+  WHEN Body_Part = 85 THEN 'ALL PARTS BODY'
+  WHEN Body_Part = 86 THEN 'OTHER(OLD)'
+  WHEN Body_Part = 87 THEN 'NOT STATED/UNK'
+  WHEN Body_Part = 88 THEN 'MOUTH'
+  WHEN Body_Part = 89 THEN 'NECK'
+  WHEN Body_Part = 90 THEN 'LOWER ARM(OLD)'
+  WHEN Body_Part = 91 THEN 'LOWER LEG(OLD)'
+  WHEN Body_Part = 92 THEN 'FINGER'
+  WHEN Body_Part = 93 THEN 'TOE'
+  WHEN Body_Part = 94 THEN 'EAR'
+END;
+
+UPDATE injuries_2017_2021
+SET Race =
+CASE
+  WHEN Race = 0 THEN 'NOT SPECIFIED'
+  WHEN Race = 1 THEN 'WHITE'
+  WHEN Race = 2 THEN 'BLACK/AFRICAN AMERICAN'
+  WHEN Race = 3 THEN 'OTHER'
+  WHEN Race = 4 THEN 'ASIAN'
+  WHEN Race = 5 THEN 'AMERICAN INDIAN/ALASKA NATIVE'
+  WHEN Race = 6 THEN 'NATIVE HAWAIIAN/PACIFIC ISLANDER'
+END;
+
+
+
+SELECT * FROM injuries_2017_2021;
