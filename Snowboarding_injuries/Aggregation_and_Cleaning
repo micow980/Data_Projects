@@ -1,24 +1,25 @@
 Queries utilized to make the dashboard.
 
-Data Aggregation
-
 CREATE TABLE injuries_2017_2021 AS
-SELECT * FROM snowboarding_injuries.neiss_2017
+SELECT * FROM neiss_2017
 UNION
-SELECT * FROM snowboarding_injuries.neiss_2018
+SELECT * FROM neiss_2018
 UNION
-SELECT * FROM snowboarding_injuries.neiss_2019
+SELECT * FROM neiss_2019
 UNION
-SELECT * FROM snowboarding_injuries.neiss_2020
+SELECT * FROM neiss_2020
 UNION
-SELECT * FROM snowboarding_injuries.neiss_2021;
+SELECT * FROM neiss_2021;
 
-Data Cleaning Code
+ALTER TABLE injuries_2017_2021 DROP COLUMN column_name;
 
 ALTER TABLE injuries_2017_2021 MODIFY Diagnosis VARCHAR(255);
 ALTER TABLE injuries_2017_2021 MODIFY Body_Part VARCHAR(255);
 ALTER TABLE injuries_2017_2021 MODIFY Sex VARCHAR(255);
 ALTER TABLE injuries_2017_2021 MODIFY Race VARCHAR(255);
+
+UPDATE injuries_2017_2021
+SET Treatment_Date = DATE_FORMAT(Treatment_Date, '%Y-%m-%d');
 
 UPDATE injuries_2017_2021
 SET Diagnosis = (
@@ -104,6 +105,79 @@ CASE
   WHEN Race = 6 THEN 'NATIVE HAWAIIAN/PACIFIC ISLANDER'
 END;
 
+UPDATE injuries_2017_2021
+SET Sex =
+CASE
+  WHEN Sex = 1 THEN 'MALE'
+  WHEN Sex = 2 THEN 'FEMALE'
+END;
 
+CREATE TABLE dataset AS
+SELECT Treatment_Date, Age, Sex, Hispanic, Race, Body_part, Diagnosis
+FROM injuries_2017_2021;
 
-SELECT * FROM injuries_2017_2021;
+SELECT *
+FROM Dataset;
+
+SELECT Diagnosis, COUNT(*), YEAR(Treatment_Date) AS Year
+FROM dataset
+GROUP BY 1, 3
+ORDER BY 3, 2 DESC;
+
+#Injuries Per Month Per Year
+SELECT COUNT(*), MONTH(Treatment_Date) AS MONTH, YEAR(Treatment_Date) AS Year
+FROM dataset
+GROUP BY 2, 3
+ORDER BY 2 ASC;
+
+#Looking at the most common injury diagnosis
+SELECT Diagnosis, Body_part, COUNT(*)
+FROM dataset
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 15;
+
+#Looking at the most common injured body part
+SELECT Body_Part, COUNT(*)
+FROM dataset
+GROUP BY Body_Part
+ORDER BY 2 DESC;
+
+#Looking at the counts of injuries by Sex
+SELECT Sex, COUNT(*)
+FROM dataset
+GROUP BY Sex
+ORDER BY 2 DESC;
+
+#Looking at the most common injuries for Males
+SELECT Body_Part, COUNT(*) as male_injuries
+FROM dataset
+WHERE Sex = 'MALE'
+GROUP BY Body_Part
+ORDER BY 2 DESC;
+
+#Looking at the most common injuries for Females
+SELECT Body_Part, COUNT(*) as female_injuries
+FROM dataset
+WHERE Sex = 'FEMALE'
+GROUP BY Body_Part
+ORDER BY 2 DESC;
+
+#Creating a query to combine the injuries that highlight both male and female for butterfly chart in Tableau
+SELECT t1.Body_part, t1.male_injuries, t2.female_injuries
+FROM (SELECT Body_Part, COUNT(*) as male_injuries
+FROM dataset
+WHERE Sex = 'MALE'
+GROUP BY Body_Part
+ORDER BY 2 DESC) as t1, 
+(SELECT Body_Part, COUNT(*) as female_injuries
+FROM dataset
+WHERE Sex = 'FEMALE'
+GROUP BY Body_Part
+ORDER BY 2 DESC) as t2
+WHERE t1.Body_part = t2.Body_part;
+
+SELECT COUNT(*) as num_rows
+FROM dataset;
+
+SELECT *, YEAR(Treatment_Date) AS year FROM dataset
